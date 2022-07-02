@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>csv2vcf</title>
+</head>
+<body>
+    <div>
+        <input type="file" id="files" style="display: none" onchange="fileImport();">
+        <input type="button" id="fileImport" value="导入">
+    </div>
+ 
+ 
+    <script>
+        const $ = document.querySelector;
+        //点击导入按钮,使files触发点击事件,然后完成读取文件的操作
+        document.querySelector("#fileImport").onclick = function() {
+            document.querySelector("#files").click();
+        }
+function randomWord(randomFlag, min, max) {
+  let str = "",
+    range = min,
+    arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+      'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+      'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+      'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',];
+ 
+  if (randomFlag) {
+    range = Math.round(Math.random() * (max - min)) + min;// 任意长度
+  }
+  for (let i = 0; i < range; i++) {
+    pos = Math.round(Math.random() * (arr.length - 1));
+    str += arr[pos];
+  }
+  return str;
+}
+ 
+        function fileImport() {
+            //获取读取我文件的File对象
+            var selectedFile = document.getElementById('files').files[0];
+            var name = selectedFile.name; //读取选中文件的文件名
+            var size = selectedFile.size; //读取选中文件的大小
+            console.log("文件名:" + name + "大小:" + size);
+            var reader = new FileReader(); //这是核心,读取操作就是由它完成.
+            reader.readAsText(selectedFile); //读取文件的内容,也可以读取文件的URL
+            reader.onload = function() {
+                //当读取完成后回调这个函数,然后此时文件的内容存储到了result中,直接操作即可
+                var list1  = this.result.split("\r\n");
+				console.log(list1);
+				var strr="";
+				for(var i=0;i<list1.length;i++){
+                    if(list1[i]) {
+                        const arr = list1[i].split(',');
+                        const name = arr[0]
+                        const tel = arr[1]
+                        const org = arr[2]
+                        strr=strr+"BEGIN:VCARD\r\n"
+                        strr=strr+"VERSION:3.0\r\n"
+                        strr=strr+"N;CHARSET=UTF-8:"+name+"\r\n"
+                        strr=strr+"FN;CHARSET=UTF-8:"+name+"\r\n"
+                        strr=strr+"TEL;CELL:"+tel+"\r\n"
+                        strr=strr+"ORG:"+org+"\r\n"
+                        strr=strr+"END:VCARD\r\n"
+                    }
+				}	
+				download(name.replace("csv","vcf"),strr);
+            }
+        }
+ 
+		function download(filename, text) {
+			var pom = document.createElement('a');
+			pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			pom.setAttribute('download', filename);
+			if (document.createEvent) {
+				var event = document.createEvent('MouseEvents');
+				event.initEvent('click', true, true);
+				pom.dispatchEvent(event);
+			} else {
+				pom.click();
+			}
+		}
+    </script>
+</body>
+ 
+</html>
