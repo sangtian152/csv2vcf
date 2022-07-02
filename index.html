@@ -24,6 +24,9 @@
         font-weight: 100;
         font-size: 14px;
       }
+      .privew {
+        margin-top: 15px;
+      }
     </style>
     <script src="./js/xlsx.full.min.js"></script>
 </head>
@@ -39,11 +42,16 @@
           <p class="title">列：<span class="desc">填写英文字母（不区分大小写），规定姓名、手机号码和公司名称从哪些列中读取，默认前3列</span></p>
           <div>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：<input id="col-name" type="text" value="A"></div>
           <div>手机号码：<input id="col-tel" type="text" value="B"></div>
-          <div>公&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;司：<input id="col-org" type="text" value="C"></div>
+          <div>公司名称：<input id="col-org" type="text" value="C"></div>
         </div>
         <input class="button" type="button" id="transfer" value="转换">
     </div>
- 
+    <div class="privew">
+      <p class="title">生成预览：<span class="desc">只取其中一条预览，用于检查生成格式是否正确</span></p> 
+      <div>姓名:<span id="s-name"></span></div>
+      <div>手机号码:<span id="s-tel"></span></div>
+      <div>公司名称:<span id="s-org"></span></div>
+    </div>
     <script>
         //点击导入按钮,使files触发点击事件,然后完成读取文件的操作
         var $ = function(selector) {
@@ -54,10 +62,11 @@
         }
         $("#transfer").onclick = fileImport
         function fileChange() {
+          preview('', '', '')
           var selectedFile = $('#files').files[0];
           $("#file-name").innerHTML = selectedFile.name; //读取选中文件的文件名
         }
-        function csv2vcf(file, fileName) {
+        function csv2vcf(selectedFile, fileName) {
           var size = selectedFile.size; //读取选中文件的大小
           console.log("文件名:" + fileName + "大小:" + size);
           var reader = new FileReader(); //这是核心,读取操作就是由它完成.
@@ -101,20 +110,27 @@
           };
           reader.readAsBinaryString(file);
         }
-
+        function preview(name, tel, org) {
+          $('#s-name').innerHTML = name
+          $('#s-tel').innerHTML = tel
+          $('#s-org').innerHTML = org
+        }
         function createVcf(list1, fileName) {
           var strr="";
-          var si = $('#row-start').value
+          var si = ($('#row-start').value || 1) - 1
           var ei = $('#row-end').value || list1.length - 1
           var nk = ($('#col-name').value || 'A').toUpperCase()
           var tk = ($('#col-tel').value || 'B').toUpperCase()
           var ok = ($('#col-org').value || 'C').toUpperCase()
-          for(var si = 0; si <= ei; si++){
-            const o = list1[si];
+          for(var i = si; i <= ei; i++){
+            const o = list1[i];
               if(o && o[tk]) {
                   const name = o[nk]
                   const tel = o[tk]
                   const org = o[ok]
+                  if (i === si) {
+                    preview(name, tel, org)
+                  }
                   strr=strr+"BEGIN:VCARD\r\n"
                   strr=strr+"VERSION:3.0\r\n"
                   strr=strr+"N;CHARSET=UTF-8:"+name+"\r\n"
