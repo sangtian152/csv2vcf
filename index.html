@@ -125,9 +125,9 @@
           for(var i = si; i <= ei; i++){
             const o = list1[i];
               if(o && o[tk]) {
-                  const name = o[nk]
-                  const tel = o[tk]
-                  const org = o[ok]
+                  const name = o[nk] || ''
+                  const tel = o[tk] || ''
+                  const org = o[ok] || ''
                   if (i === si) {
                     preview(name, tel, org)
                   }
