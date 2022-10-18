@@ -104,7 +104,7 @@
             console.log(workbook)
             var st = workbook.SheetNames[0]
             var ws = workbook.Sheets[st]
-            var json = XLSX.utils.sheet_to_json(ws, {header:['A', 'B', 'C']})
+            var json = XLSX.utils.sheet_to_json(ws, {header:['A', 'B', 'C', 'D', 'E', 'F']})
             console.log(json);
             createVcf(json, fileName)
           };
